@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: root-application
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - git:
+        repoURL: <your-git-repo-url>  # e.g.,
+        revision: main
+        directories:
+          - path: dev
+          - path: test
+          - path: prod
+  template:
+    metadata:
+      name: '{{ .path.basename }}'                 
+      labels:
+        tier: '{{ .path.basename }}'
+    spec:
+      project: init-project
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd                          # because child is an Application manifest
+      source:
+        repoURL: git@github.com:MBoo-cloud/app-repo.git 
+        targetRevision: main
+        path: '{{ .path.path }}'                   # apps/hight or apps/low
+        directory:
+          recurse: true # Read all files in the directory
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
