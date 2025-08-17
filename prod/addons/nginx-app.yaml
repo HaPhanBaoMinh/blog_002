@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx-app-dev
+  name: nginx-app-prod
   namespace: argocd   
 spec:
   project: default
@@ -12,7 +12,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: prod
 
   syncPolicy:
     automated:
